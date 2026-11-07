@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CNA NEWS & FORUMS - Verified News & Public Forum</title>
+    <style>
+        :root {
+            --cna-red: #8B0000;
+            --cna-blue: #003366;
+            --cna-gold: #FFC000;
+            --bg-body: #f4f5f7;
+            --panel-bg: #ffffff;
+            --border-color: #d1d5db;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        body.dark-mode {
+            --bg-body: #0b0f19;
+            --panel-bg: #131b2e;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* PROFESSIONAL HEADER */
+        .app-header {
+            background: linear-gradient(135deg, var(--cna-red), var(--cna-blue));
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--cna-gold);
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo span {
+            background: var(--cna-gold);
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .user-status {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* TIKTOK-STYLE BLUE CHECKMARK VERIFIED BADGE */
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            background-color: #20d5ec;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 9px;
+            font-weight: 900;
+            margin-left: 4px;
+            vertical-align: middle;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        .verified-badge::before {
+            content: "✓";
+        }
+
+        /* APP STAGE */
+        .app-stage {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR NAVIGATION */
+        .sidebar {
+            width: 72px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 16px;
+            gap: 8px;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 220px;
+                align-items: stretch;
+                padding: 16px;
+            }
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            transition: 0.2s;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .nav-item { justify-content: flex-start; }
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 51, 102, 0.1);
+            color: var(--cna-blue);
+        }
+        body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .nav-text { display: none; }
+        @media (min-width: 768px) { .nav-text { display: inline; } }
+
+        /* VIEWPORT */
+        .viewport {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tab-panel {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-panel.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS & UI */
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: background 0.3s, border 0.3s;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--cna-blue);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        body.dark-mode .card-title { color: #60a5fa; }
+
+        .badge-verified-news {
+            background: #fee2e2;
+            color: var(--cna-red);
+            border: 1px solid #fecaca;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* NEWS ARTICLE THUMBNAIL PHOTO STYLE */
+        .news-article-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @media (min-width: 640px) {
+            .news-article-card {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+        .news-thumb {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #e5e7eb;
+            flex-shrink: 0;
+        }
+        @media (min-width: 640px) {
+            .news-thumb {
+                width: 200px;
+                height: 130px;
+            }
+        }
+
+        /* WARNING BANNER */
+        .warning-banner {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* POSTS & CHAT */
+        .post-feed, .chat-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .post-item, .chat-item {
+            background: rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-control, .select-control {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 6px;
+            color: var(--text-main);
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+        }
+        .input-control:focus, .select-control:focus { border-color: var(--cna-blue); }
+
+        textarea.input-control { resize: vertical; min-height: 80px; }
+
+        .btn-ui {
+            background: var(--cna-blue);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            align-self: flex-start;
+        }
+        .btn-ui:active { opacity: 0.9; }
+        .btn-ui.secondary {
+            background: #e5e7eb;
+            color: var(--text-main);
+        }
+        body.dark-mode .btn-ui.secondary {
+            background: #1f2937;
+            color: #fff;
+            border: 1px solid var(--border-color);
+        }
+
+        /* MANDATORY ENTRY AUTH OVERLAY */
+        #entry-auth-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0b0f19, #131b2e);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: #1a233a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            color: #fff;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #0d1322;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 4px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            color: #9ca3af;
+            transition: 0.2s;
+        }
+
+        .auth-tab.active {
+            background: var(--cna-blue);
+            color: #fff;
+        }
+
+        /* WELCOME TOAST NOTIFICATION */
+        .welcome-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #003366, #10b981);
+            color: #ffffff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 1100;
+            display: none;
+            animation: slideIn 0.3s ease;
+            font-weight: 700;
+            font-size: 14px;
+            border-left: 5px solid var(--cna-gold);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* SETTINGS GRID FOR 50 FEATURES */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        @media (min-width: 640px) {
+            .settings-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .setting-box {
+            background: rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* CHAT CONTAINER */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-input-bar {
+            padding: 10px;
+            background: rgba(0,0,0,0.02);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+        }
+
+        /* BANNED SCREEN */
+        #banned-screen {
+            position: fixed;
+            inset: 0;
+            background: #0f172a;
+            color: #ffffff;
+            z-index: 999999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MANDATORY ENTRY SIGN IN / SIGN UP SCREEN -->
+    <div id="entry-auth-screen">
+        <div class="auth-card">
+            <h2 style="font-size: 22px; font-weight: 900; text-align: center; color: #fff;">CNA NEWS & FORUMS</h2>
+            <p style="font-size: 12px; color: #9ca3af; text-align: center;">Please sign in or register with username and password to access the verified network.</p>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-signin-btn" onclick="switchAuthMode('signin')">Sign In</div>
+                <div class="auth-tab" id="tab-signup-btn" onclick="switchAuthMode('signup')">Sign Up</div>
+            </div>
+
+            <!-- Sign In Form -->
+            <div id="form-signin" style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Username</label>
+                <input type="text" class="input-control" id="entry-signin-username" placeholder="Enter your username...">
+                <label style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Password</label>
+                <input type="password" class="input-control" id="entry-signin-password" placeholder="Enter your password...">
+                <button class="btn-ui" style="width: 100%; text-align: center; justify-content: center; margin-top: 4px;" onclick="processSignIn()">Sign In & Enter</button>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="form-signup" style="display: none; flex-direction: column; gap: 12px;">
+                <label style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Choose Username</label>
+                <input type="text" class="input-control" id="entry-signup-username" placeholder="Enter username...">
+                <label style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Choose Password</label>
+                <input type="password" class="input-control" id="entry-signup-password" placeholder="Enter password...">
+                <button class="btn-ui" style="width: 100%; text-align: center; justify-content: center; margin-top: 4px;" onclick="processSignUp()">Register & Enter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WELCOME TOAST NOTIFICATION -->
+    <div class="welcome-toast" id="welcome-toast-box">
+        🎉 Welcome back to CNA News & Forums!
+    </div>
+
+    <!-- BANNED SCREEN -->
+    <div id="banned-screen">
+        <div style="font-size: 56px; margin-bottom: 2px;">⚠️</div>
+        <h1 style="color: #ef4444; font-size: 24px; font-weight: 900;">ACCOUNT SUSPENDED</h1>
+        <p style="font-size: 15px; color: #fca5a5; max-width: 450px; font-weight: 700;" id="ban-reason-display">
+            YOUR BAN FOR BAD TEXT.
+        </p>
+        <p style="font-size: 12px; color: #9ca3af; max-width: 400px;">
+            Security policy violation detected. You must wait 24 hours before you can sign in or register again, or submit an appeal below.
+        </p>
+        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; padding: 10px 20px; border-radius: 8px; font-weight: 700; color: #fca5a5; font-size: 14px;" id="ban-timer-display">
+            Time remaining: Calculating...
+        </div>
+
+        <div style="background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 10px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+            <label style="font-size: 12px; color: #cbd5e1; font-weight: 700;">Submit Ban Appeal</label>
+            <textarea class="input-control" id="ban-appeal-text" placeholder="Explain why your ban should be reviewed..." style="min-height: 60px; font-size: 12px;"></textarea>
+            <button class="btn-ui" style="background: var(--cna-blue); width: 100%; text-align: center; justify-content: center; font-size: 12px; padding: 8px;" onclick="submitBanAppeal()">Send Appeal to Moderators</button>
+        </div>
+
+        <button class="btn-ui secondary" style="background: #334155; color: #fff; font-size: 12px; padding: 8px 16px;" onclick="performBanLogout()">Log Out / Switch Account</button>
+    </div>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="brand-logo">
+            CNA NEWS <span>& FORUMS</span>
+        </div>
+        <div class="user-status">
+            <span id="current-user-tag">@Guest</span>
+            <button class="btn-ui secondary" style="padding: 4px 10px; font-size: 11px;" onclick="logoutUser()">Log Out</button>
+        </div>
+    </header>
+
+    <!-- STAGE -->
+    <div class="app-stage">
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <div class="nav-item active" onclick="switchTab('news', this)">
+                <span>📰</span> <span class="nav-text">Live News Feed</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('submit-news', this)">
+                <span>✍️</span> <span class="nav-text">Citizen Report</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('forum', this)">
+                <span>💬</span> <span class="nav-text">Public Forum</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('chat', this)">
+                <span>⚡</span> <span class="nav-text">Live Broadcast Chat</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('bancenter', this)">
+                <span>🛡️</span> <span class="nav-text">Ban Center</span>
+            </div>
+            <div class="nav-item" id="nav-admin-panel" style="display: none; background: rgba(139, 0, 0, 0.15); border: 1px solid var(--cna-red);" onclick="switchTab('adminpanel', this)">
+                <span>👑</span> <span class="nav-text" style="color: var(--cna-red); font-weight: 900;">Admin Appeals</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('settings', this)">
+                <span>⚙️</span> <span class="nav-text">Settings (50+)</span>
+            </div>
+        </nav>
+
+        <!-- VIEWPORT -->
+        <main class="viewport">
+            
+            <!-- TAB 1: REAL LIVE NEWS FEED WITH PHOTOS -->
+            <div class="tab-panel active" id="tab-news">
+                <div class="card">
+                    <div class="card-title">
+                        Live Verified Global & National News
+                        <span class="badge-verified-news" id="current-news-edition-tag">Region: US</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted);">Fetching real-time headlines with photos dynamically based on your country preference...</p>
+                    <button class="btn-ui secondary" style="padding: 6px 12px; font-size: 11px; align-self: flex-start;" onclick="fetchLiveNews()">🔄 Refresh Live News</button>
+                </div>
+
+                <div class="post-feed" id="news-feed-container">
+                    <div class="card"><p style="text-align: center; color: var(--text-muted);">Loading live headlines and photos...</p></div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SUBMIT CITIZEN NEWS -->
+            <div class="tab-panel" id="tab-submit-news">
+                <div class="card" id="news-submission-card">
+                    <div class="card-title">✍️ Submit Citizen News Report</div>
+                    <p style
